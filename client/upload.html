@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #E374F9, #F8D8F8);
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            position: absolute;
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        p.subtitle {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .dropzone {
+            border: 2px dashed #E374F9;
+            border-radius: 12px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #bbb;
+            font-size: 13px;
+            position: relative;
+        }
+
+        .dropzone:hover, .dropzone.drag-over {
+            background: #fdf0ff;
+            border-color: #c040e0;
+        }
+
+        .dropzone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dropzone-icon { font-size: 28px; margin-bottom: 8px; }
+
+        .file-name {
+            margin-top: 10px;
+            color: #E374F9;
+            font-weight: bold;
+            font-size: 13px;
+            display: none;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            text-align: left;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .field input, .field select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            font-family: Arial, sans-serif;
+        }
+
+        .field input:focus, .field select:focus {
+            border-color: #E374F9;
+        }
+
+        .error {
+            display: none;
+            color: red;
+            font-size: 13px;
+        }
+
+        .but {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 4px;
+        }
+
+        .but button {
+            color: white;
+            background-color: #FF4800;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .but button:hover { opacity: 0.85; }
+        .but button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .but .back-btn {
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .loader {
+            display: none;
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #eee;
+            border-top-color: #FF4800;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>THINK++</h1>
+        <p class="subtitle">Upload your notes and we'll generate a quiz from them.</p>
+
+        <div class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept=".pdf,.docx" />
+            <div class="dropzone-icon">📄</div>
+            <div>Click to upload or drag & drop<br/>PDF or DOCX — max 10MB</div>
+            <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="controls">
+            <div class="field">
+                <label>Number of Questions</label>
+                <input type="number" id="numQuestions" value="5" min="1" max="20" />
+            </div>
+            <div class="field">
+                <label>Quiz Type</label>
+                <select id="quizType">
+                    <option value="multiple_choice">Multiple Choice</option>
+                    <option value="true_false">True / False</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="error" id="errorBox"></div>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            Generating your quiz...
+        </div>
+
+        <div class="but">
+            <button class="back-btn" onclick="location.href='index.html'">Back</button>
+            <button id="generateBtn" onclick="generateQuiz()" disabled>Generate</button>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const generateBtn = document.getElementById('generateBtn');
+        const errorBox = document.getElementById('errorBox');
+        const loader = document.getElementById('loader');
+        const dropzone = document.getElementById('dropzone');
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0]) {
+                fileName.textContent = '✓ ' + fileInput.files[0].name;
+                fileName.style.display = 'block';
+                generateBtn.disabled = false;
+            }
+        });
+
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+        dropzone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = '✓ ' + file.name;
+                fileName.style.display = 'block';
+                generateBtn.disabled = false;
+            }
+        });
+
+        async function generateQuiz() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            errorBox.style.display = 'none';
+            loader.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('document', file);
+            formData.append('numQuestions', document.getElementById('numQuestions').value);
+            formData.append('quizType', document.getElementById('quizType').value);
+
+            try {
+                const res = await fetch('/api/generate-quiz', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Something went wrong');
+
+                localStorage.setItem('uploadedQuiz', JSON.stringify(data.questions));
+                localStorage.setItem('difficulty', 'uploaded');
+                window.location.href = 'problem.html';
+            } catch (err) {
+                errorBox.textContent = '⚠ ' + err.message;
+                errorBox.style.display = 'block';
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

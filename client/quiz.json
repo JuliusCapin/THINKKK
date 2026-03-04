@@ -1,0 +1,95 @@
+{
+        "easy": [
+            {
+                "question": "2 + 2 = ?",
+                "options": ["3", "4", "5", "6"],
+                "correct": 1
+            },
+            {
+                "question": "5 - 3 = ?",
+                "options": ["1", "2", "3", "4"],
+                "correct": 1
+            }
+        ],
+
+        "medium": [
+            {
+                "question": "What does CSS stand for?",
+                "options": [
+                    "Computer Style Sheets",
+                    "Cascading Style Sheets",
+                    "Creative Style System",
+                    "Colorful Style Sheets"
+                ],
+                "correct": 1
+            },
+            {
+                "question": "Which is a JavaScript framework?",
+                "options": ["Laravel", "React", "Django", "Flask"],
+                "correct": 1
+            },
+            {
+                "question": "What is the output of 3 * 3 in Python?",
+                "options": ["6", "9", "12", "15"],
+                "correct": 1
+            }
+        ],
+
+        "hard": [
+            {
+                "question": "Time complexity of binary search?",
+                "options": ["O(n)", "O(log n)", "O(n^2)", "O(1)"],
+                "correct": 1
+            },
+            {
+                "question": "Which uses LIFO?",
+                "options": ["Queue", "Stack", "Array", "Tree"],
+                "correct"   : 1
+            },
+            {
+                "question": "What is the output of 2 ** 3 in Python?",
+                "options": ["5", "6", "8", "9"],
+                "correct": 2
+            },
+            {
+                "question": "Which of the following is not a programming language?",
+                "options": ["Python", "Java", "HTML", "C++"],
+                "correct": 2
+            },  
+            {
+                "question": "What does SQL stand for?",
+                "options": [
+                    "Structured Query Language",
+                    "Simple Query Language",
+                    "Sequential Query Language",
+                    "Standard Query Language"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "Which of the following is a NoSQL database?",
+                "options": ["MySQL", "MongoDB", "PostgreSQL", "SQLite"],
+                "correct": 1
+            },
+            {
+                "question": "What is the output of 5 % 2 in Python?",
+                "options": ["0", "1", "2", "3"],
+                "correct": 1
+            },
+            {
+                "question": "Which of the following is not a programming paradigm?",
+                "options": ["Object-oriented", "Functional", "Procedural", "Graphical"],
+                "correct": 3
+            },
+            {
+                "question": "What is the output of 10 // 3 in Python?",
+                "options": ["3", "3.33", "4", "5"],
+                "correct": 0
+            },
+            {
+                "question": "Which of the following is not a data structure?",
+                "options": ["Array", "Linked List", "Stack", "Algorithm"],
+                "correct": 3
+            }
+        ]
+    }
